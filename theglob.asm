@@ -1,12 +1,12 @@
 0000: DB 01       IN   A,($01)		;Read SYSTEM port ($01) - for a normal system A will be loaded with $BE
-0002: E6 C0       AND  $C0			;Bitwise AND on A - A should become $00
-0004: FE 80       CP   $80			;I can only guess that this is to verify that the physical mask on bit 6 of port $01 is working correctly
+0002: E6 C0       AND  $C0			  ;Bitwise AND on A - A should become $00
+0004: FE 80       CP   $80			  ;I can only guess that this is to verify that the physical mask on bit 6 of port $01 is working correctly
 0006: 28 01       JR   Z,$0009		;If the physical (as in, the copper trace on the PCB) mask is working, proceed with game code - otherwise...
-0008: 76          HALT				;Crash and burn
+0008: 76          HALT				    ;Crash and burn
 0009: 06 00       LD   B,$00
 000B: 31 FF 7F    LD   SP,$7FFF		;Initialize the stack
-000E: CD AC 11    CALL $11AC		;GOSUB: DELAY_LOOP (I think it's a delay loop, at least)
-0011: ED 56       IM   1			;Set INTERRUPT_MODE $01
+000E: CD AC 11    CALL $11AC		  ;GOSUB: DELAY_LOOP (I think it's a delay loop, at least)
+0011: ED 56       IM   1			    ;Set INTERRUPT_MODE $01
 0013: 97          SUB  A
 0014: D3 01       OUT  ($01),A		
 0016: 47          LD   B,A
@@ -33,19 +33,19 @@
 
 ;SUBROUTINE: INTERRUPT_MODE_01_HANDLER - This is the handler subroutine for IM1 (always located at 0x0038 for a Z80)
 
-0038: F5          PUSH AF			;Handler always starts with a save sequence
+0038: F5          PUSH AF			    ;Handler always starts with a save sequence
 0039: C5          PUSH BC
 003A: D5          PUSH DE
 003B: E5          PUSH HL
 003C: DB 00       IN   A,($00)		;Read port $00 into A - the EPOS driver in MAME seems to indicate that this is the dipswitch/watchdog interface
-003E: CB 7F       BIT  7,A			;Test bit 7 of A; set zero flag if true - If these are the DIP settings, this would be the switch for demo sounds
+003E: CB 7F       BIT  7,A			  ;Test bit 7 of A; set zero flag if true - If these are the DIP settings, this would be the switch for demo sounds
 0040: 28 0A       JR   Z,$004C		;If demo sounds are enabled, jump to 0x004C, otherwise...
 0042: 3A 8C 7C    LD   A,($7C8C)	;Store A (port $00 - DIP settings) into RAM
 0045: FE 00       CP   $00
 0047: 28 03       JR   Z,$004C
 0049: 97          SUB  A
 004A: 18 02       JR   $004E
-004C: 3E 01       LD   A,$01		;Load $01 into A
+004C: 3E 01       LD   A,$01		  ;Load $01 into A
 004E: 32 5B 7D    LD   ($7D5B),A
 0051: 21 59 7D    LD   HL,$7D59
 0054: 97          SUB  A
@@ -80,7 +80,7 @@
 0077: 70          LD   (HL),B
 0078: EA 05 F9    JP   PE,$F905
 007B: 45          LD   B,L
-007C: F5          PUSH AF			;This is where most CALLs land
+007C: F5          PUSH AF			    ;This is where most CALLs land
 007D: C5          PUSH BC
 007E: 06 FF       LD   B,$FF
 0080: 3A 62 7D    LD   A,($7D62)
@@ -898,14 +898,14 @@
 0603: DD 21 92 9D LD   IX,$9D92
 0607: FD 21 73 00 LD   IY,$0073
 060B: 21 00 70    LD   HL,$7000		;Load mask for ROM 11, as it is checksummed first
-060E: 0E 08       LD   C,$08		;Load range for ROM 11 (0x0800 = 2048 bytes)
+060E: 0E 08       LD   C,$08		  ;Load range for ROM 11 (0x0800 = 2048 bytes)
 0610: 45          LD   B,L
-0611: CD 26 06    CALL $0626		;GOSUB: CHECKSUM
+0611: CD 26 06    CALL $0626		  ;GOSUB: CHECKSUM
 0614: 06 07       LD   B,$07
 0616: 21 00 00    LD   HL,$0000		;Load mask for ROM 10 (all subsequent ROM masks increment from 0 to 6)
 0619: C5          PUSH BC
 061A: 01 10 00    LD   BC,$0010		;Load range for ROM 11 (0x1000 = 4096 bytes)
-061D: CD 26 06    CALL $0626		;GOSUB: CHECKSUM
+061D: CD 26 06    CALL $0626		  ;GOSUB: CHECKSUM
 0620: C1          POP  BC
 0621: 10 F6       DJNZ $0619
 0623: C1          POP  BC
@@ -914,11 +914,11 @@
 
 ;SUBROUTINE: CHECKSUM - Perform ROM checksums
 
-0626: 3E 07       LD   A,$07		;Initialize the ROM counter
+0626: 3E 07       LD   A,$07		  ;Initialize the ROM counter
 0628: 32 F2 7B    LD   ($7BF2),A
 062B: 97          SUB  A
 062C: FD 23       INC  IY
-062E: 86          ADD  A,(HL)		;Loop through all addresses in range HL
+062E: 86          ADD  A,(HL)		  ;Loop through all addresses in range HL
 062F: 23          INC  HL
 0630: 10 FC       DJNZ $062E
 0632: 0D          DEC  C
@@ -926,12 +926,12 @@
 0635: FD 86 00    ADD  A,(IY+$00)	;Add the checksum complement to A
 0638: FD E5       PUSH IY
 063A: FD 21 5B 06 LD   IY,$065B
-063E: FE 00       CP   $00			;Compare A to $00 - for a valid checksum, A will contain $00
+063E: FE 00       CP   $00			  ;Compare A to $00 - for a valid checksum, A will contain $00
 0640: 28 09       JR   Z,$064B		;Valid checksum skips to the status output subroutine
 0642: FD 21 5E 06 LD   IY,$065E
-0646: 3E 01       LD   A,$01		;Set CHECKSUM_INVALID_FLAG = TRUE
+0646: 3E 01       LD   A,$01		  ;Set CHECKSUM_INVALID_FLAG = TRUE
 0648: 32 7C 7C    LD   ($7C7C),A
-064B: CD 93 12    CALL $1293		;GOSUB: ROM_STATUS_OUTPUT
+064B: CD 93 12    CALL $1293		  ;GOSUB: ROM_STATUS_OUTPUT
 064E: DD 19       ADD  IX,DE
 0650: FD E1       POP  IY
 0652: C9          RET
@@ -2988,25 +2988,25 @@
 
 ;SUBROUTINE: DRAW_ELEVATOR - Draws elevator borders when they are in motion
 
-1167: C5          PUSH BC			;Store registers
+1167: C5          PUSH BC			    ;Store registers
 1168: D5          PUSH DE
 1169: E5          PUSH HL
 116A: 32 A9 78    LD   ($78A9),A	;Load brush color into memory
-116D: 3E 88       LD   A,$88		;Load the maximum horizontal draw distance
-116F: 90          SUB  B			;Calculate the number of vertical pixel groups to draw on this CALL
-1170: 51          LD   D,C			;Load the horizontal distance to perform the draw (in units of pixel groups)
-1171: 4F          LD   C,A			;Load the distance to jump in memory to make the next draw (used at 0x117B: ADD HL, BC)
-1172: 58          LD   E,B			;Store the vertical distance to perform the draw (in units of pixel groups)
+116D: 3E 88       LD   A,$88		  ;Load the maximum horizontal draw distance
+116F: 90          SUB  B			    ;Calculate the number of vertical pixel groups to draw on this CALL
+1170: 51          LD   D,C			  ;Load the horizontal distance to perform the draw (in units of pixel groups)
+1171: 4F          LD   C,A			  ;Load the distance to jump in memory to make the next draw (used at 0x117B: ADD HL, BC)
+1172: 58          LD   E,B			  ;Store the vertical distance to perform the draw (in units of pixel groups)
 1173: 3A A9 78    LD   A,($78A9)	;Load brush color into A
-1176: AE          XOR  (HL)			;XOR (complement) the data at address in HL with A and store result in A
-1177: 77          LD   (HL),A		;Draw the color in A to the address in HL
-1178: 23          INC  HL			;Move to the next vertical pixel group
-1179: 10 F8       DJNZ $1173		;Decrement the vertical pixel group counter
-117B: 09          ADD  HL,BC		;Move to the next horizontal pixel group (B will always be $00 at this point, so, technically, only C is added to HL
-117C: 43          LD   B,E			;Re-initialize the vertical pixel group counter
-117D: 15          DEC  D			;Loop counter - used to set the zero flag to skip the following jump
+1176: AE          XOR  (HL)			  ;XOR (complement) the data at address in HL with A and store result in A
+1177: 77          LD   (HL),A		  ;Draw the color in A to the address in HL
+1178: 23          INC  HL			    ;Move to the next vertical pixel group
+1179: 10 F8       DJNZ $1173		  ;Decrement the vertical pixel group counter
+117B: 09          ADD  HL,BC		  ;Move to the next horizontal pixel group (B will always be $00 at this point, so, technically, only C is added to HL
+117C: 43          LD   B,E			  ;Re-initialize the vertical pixel group counter
+117D: 15          DEC  D			    ;Loop counter - used to set the zero flag to skip the following jump
 117E: 20 F3       JR   NZ,$1173		;Loop back to beginning of draw routine
-1180: E1          POP  HL			;Reload registers before returning
+1180: E1          POP  HL			    ;Reload registers before returning
 1181: D1          POP  DE
 1182: C1          POP  BC
 1183: C9          RET
@@ -3151,25 +3151,25 @@
 1258: E5          PUSH HL
 1259: D9          EXX
 125A: C1          POP  BC
-125B: 11 01 00    LD   DE,$0001			;Top black bar
+125B: 11 01 00    LD   DE,$0001		;Top black bar
 125E: CD 8A 12    CALL $128A
 1261: 1B          DEC  DE
 1262: D5          PUSH DE
 1263: D9          EXX
 1264: C1          POP  BC
-1265: 11 88 00    LD   DE,$0088			;Right black bar
+1265: 11 88 00    LD   DE,$0088		;Right black bar
 1268: CD 8A 12    CALL $128A
 126B: 2B          DEC  HL
 126C: E5          PUSH HL
 126D: D9          EXX
 126E: C1          POP  BC
-126F: 11 FF FF    LD   DE,$FFFF			;Bottom black bar
+126F: 11 FF FF    LD   DE,$FFFF		;Bottom black bar
 1272: CD 8A 12    CALL $128A
 1275: 1B          DEC  DE
 1276: D5          PUSH DE
 1277: D9          EXX
 1278: C1          POP  BC
-1279: 11 78 FF    LD   DE,$FF78			;Left black bar
+1279: 11 78 FF    LD   DE,$FF78		;Left black bar
 127C: CD 8A 12    CALL $128A
 127F: 08          EX   AF,AF'
 1280: 3D          DEC  A
@@ -3188,7 +3188,7 @@
 128B: 19          ADD  HL,DE			;HL will be the address in video RAM to be written to
 128C: 77          LD   (HL),A			;Load $00 (black) into the address
 128D: 10 FC       DJNZ $128B			;Loop until B sets the zero flag
-128F: D3 00       OUT  ($00),A			;Output to CRT controller via port $00?
+128F: D3 00       OUT  ($00),A		;Output to CRT controller via port $00?
 1291: D9          EXX
 1292: C9          RET
 
@@ -8122,14 +8122,14 @@
 2F49: 3E 04       LD   A,$04
 2F4B: 32 A0 78    LD   ($78A0),A
 2F4E: 01 02 02    LD   BC,$0202
-2F51: E5          PUSH HL				;Store HL on stack
-2F52: 2A AA 78    LD   HL,($78AA)		;
+2F51: E5          PUSH HL				  ;Store HL on stack
+2F52: 2A AA 78    LD   HL,($78AA)	;
 2F55: 5E          LD   E,(HL)			;
-2F56: 23          INC  HL				;
+2F56: 23          INC  HL				  ;
 2F57: 56          LD   D,(HL)			;
-2F58: 23          INC  HL				;
-2F59: 22 AA 78    LD   ($78AA),HL		;
-2F5C: E1          POP  HL				;
+2F58: 23          INC  HL				  ;
+2F59: 22 AA 78    LD   ($78AA),HL	;
+2F5C: E1          POP  HL				  ;
 2F5D: 19          ADD  HL,DE			;
 2F5E: 3E EE       LD   A,$EE			;Load the inverter color into A (light green)
 2F60: CD 67 11    CALL $1167			;GOSUB: DRAW_ELEVATOR

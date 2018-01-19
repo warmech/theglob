@@ -1,0 +1,11 @@
+7C4B: A is loaded into this by $0026; the value is $01. This may be related to difficulty, or perhaps enemy spawn rate.
+
+7D59: Loaded into HL at $0029, whereupon A is then loaded into this address; the value is $01. This may be related to difficulty, or perhaps enemy spawn rate.
+
+7D5A: Loaded into HL at $002E, whereupon A is then loaded into this address; the value is $01. This may be related to difficulty, or perhaps enemy spawn rate.
+
+7D5B: Loaded into HL at $0030, whereupon A is then loaded into this address; the value is $01. Continually overwritten by initial value.
+
+7D16: B is loaded into HL (7D16) at $0945; the value is $00. This may be related to difficulty, or perhaps enemy spawn rate.
+
+7D17: B is loaded into HL (7D17) at $0947; the value is $00. This may be related to difficulty, or perhaps enemy spawn rate.

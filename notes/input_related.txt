@@ -1,0 +1,15 @@
+																			   
+================================= PLAYER INPUT =================================
+
+I had initially assumed that, sine the game was writing the status of player 
+input to $7D62, that the game was reading that address in memory to determine 
+what action to take (move, jump, etc.). After realizing that it would probably 
+make more sense to just poll the inputs at port $02 and perform bitwise 
+operations on them, I went on assuming this would simply be the case. While I 
+was experimenting in RAM, I decided to play with that address and, lo and 
+behold, the game reads that address and performs bitwise operations on it to 
+determine what to do with Toby. All that to say:
+
+Player input is read from port $02 into $7D62 and bitwise operations are 
+performed on that location in memory to determine what action to have Toby 
+perform.

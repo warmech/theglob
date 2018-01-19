@@ -1,5 +1,5 @@
 0000: DB 01       IN   A,($01)    ;Read SYSTEM port ($01) - for a normal system A will be loaded with $BE
-0002: E6 C0       AND  $C0        ;Bitwise AND on A - A should become $00
+0002: E6 C0       AND  $C0        ;Bitwise AND on A - A should become $80
 0004: FE 80       CP   $80        ;I can only guess that this is to verify that the physical mask on bit 6 of port $01 is working correctly
 0006: 28 01       JR   Z,$0009    ;If the physical (as in, the copper trace on the PCB) mask is working, proceed with game code - otherwise...
 0008: 76          HALT            ;Crash and burn
@@ -7,19 +7,22 @@
 000B: 31 FF 7F    LD   SP,$7FFF   ;Initialize the stack
 000E: CD AC 11    CALL $11AC      ;GOSUB: DELAY_LOOP (I think it's a delay loop, at least)
 0011: ED 56       IM   1          ;Set INTERRUPT_MODE $01
-0013: 97          SUB  A
-0014: D3 01       OUT  ($01),A		
-0016: 47          LD   B,A
-0017: 0E 88       LD   C,$88
-0019: 6F          LD   L,A
-001A: 26 78       LD   H,$78
-001C: 77          LD   (HL),A
-001D: 23          INC  HL
-001E: 10 FC       DJNZ $001C
-0020: D3 00       OUT  ($00),A
-0022: 0D          DEC  C
-0023: 20 F7       JR   NZ,$001C
-0025: 3C          INC  A
+
+;CLEAR_RAM
+
+0013: 97          SUB  A					;Clear A
+0014: D3 01       OUT  ($01),A		;???
+0016: 47          LD   B,A				;Clear B
+0017: 0E 88       LD   C,$88			;Load the upper byte for the range of RAM ($8800)
+0019: 6F          LD   L,A				;Clear L
+001A: 26 78       LD   H,$78			;HL is now the address at the start of RAM
+001C: 77          LD   (HL),A			;Begin clearing RAM
+001D: 23          INC  HL					;move to next address in RAM
+001E: 10 FC       DJNZ $001C			;On first iteration, B underflows to $FF and counts down with each iteration
+0020: D3 00       OUT  ($00),A		;???
+0022: 0D          DEC  C					;Decrement the lower nibble of the RAM range to advance to the next 256 bytes of RAM
+0023: 20 F7       JR   NZ,$001C		;Loop through $7800 to $FFFF to zero out RAM
+0025: 3C          INC  A					
 0026: 32 4B 7C    LD   ($7C4B),A
 0029: 21 59 7D    LD   HL,$7D59
 002C: 77          LD   (HL),A
@@ -27,8 +30,8 @@
 002E: 77          LD   (HL),A
 002F: 23          INC  HL
 0030: 77          LD   (HL),A
-0031: 3E FF       LD   A,$FF
-0033: C3 42 01    JP   $0142
+0031: 3E FF       LD   A,$FF			;The subroutine the next instruction jumps to stores A ($FF) at the address where player input is buffered. I have no idea why.
+0033: C3 42 01    JP   $0142			;GOSUB: 
 0036: 28 4E       JR   Z,$0086
 
 ;SUBROUTINE: INTERRUPT_MODE_01_HANDLER - This is the handler subroutine for IM1 (always located at 0x0038 for a Z80)
@@ -189,6 +192,8 @@
 013F: C1          POP  BC
 0140: F1          POP  AF
 0141: C9          RET
+
+;SUBROUTINE: 
 
 0142: 32 62 7D    LD   ($7D62),A
 0145: CD 3B 09    CALL $093B
@@ -1407,6 +1412,8 @@
 0938: E1          POP  HL
 0939: D1          POP  DE
 093A: C9          RET
+
+;SUBROUTINE: 
 
 093B: F5          PUSH AF
 093C: C5          PUSH BC

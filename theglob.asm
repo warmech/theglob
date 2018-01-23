@@ -10,18 +10,18 @@
 
 ;CLEAR_RAM
 
-0013: 97          SUB  A					;Clear A
-0014: D3 01       OUT  ($01),A		;???
-0016: 47          LD   B,A				;Clear B
-0017: 0E 88       LD   C,$88			;Load the upper byte for the range of RAM ($8800)
-0019: 6F          LD   L,A				;Clear L
-001A: 26 78       LD   H,$78			;HL is now the address at the start of RAM
-001C: 77          LD   (HL),A			;Begin clearing RAM
-001D: 23          INC  HL					;move to next address in RAM
-001E: 10 FC       DJNZ $001C			;On first iteration, B underflows to $FF and counts down with each iteration
-0020: D3 00       OUT  ($00),A		;???
-0022: 0D          DEC  C					;Decrement the lower nibble of the RAM range to advance to the next 256 bytes of RAM
-0023: 20 F7       JR   NZ,$001C		;Loop through $7800 to $FFFF to zero out RAM
+0013: 97          SUB  A          ;Clear A
+0014: D3 01       OUT  ($01),A    ;???
+0016: 47          LD   B,A        ;Clear B
+0017: 0E 88       LD   C,$88      ;Load the upper byte for the range of RAM ($8800)
+0019: 6F          LD   L,A        ;Clear L
+001A: 26 78       LD   H,$78      ;HL is now the address at the start of RAM
+001C: 77          LD   (HL),A     ;Begin clearing RAM
+001D: 23          INC  HL         ;move to next address in RAM
+001E: 10 FC       DJNZ $001C      ;On first iteration, B underflows to $FF and counts down with each iteration
+0020: D3 00       OUT  ($00),A    ;???
+0022: 0D          DEC  C          ;Decrement the lower nibble of the RAM range to advance to the next 256 bytes of RAM
+0023: 20 F7       JR   NZ,$001C   ;Loop through $7800 to $FFFF to zero out RAM
 0025: 3C          INC  A					
 0026: 32 4B 7C    LD   ($7C4B),A
 0029: 21 59 7D    LD   HL,$7D59
@@ -30,8 +30,8 @@
 002E: 77          LD   (HL),A
 002F: 23          INC  HL
 0030: 77          LD   (HL),A
-0031: 3E FF       LD   A,$FF			;The subroutine the next instruction jumps to stores A ($FF) at the address where player input is buffered. I have no idea why.
-0033: C3 42 01    JP   $0142			;GOSUB: 
+0031: 3E FF       LD   A,$FF      ;The subroutine the next instruction jumps to stores A ($FF) at the address where player input is buffered. I have no idea why.
+0033: C3 42 01    JP   $0142      ;GOSUB: 
 0036: 28 4E       JR   Z,$0086
 
 ;SUBROUTINE: INTERRUPT_MODE_01_HANDLER - This is the handler subroutine for IM1 (always located at 0x0038 for a Z80)
